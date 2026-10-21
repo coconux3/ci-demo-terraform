@@ -1,0 +1,50 @@
+name: maintenance
+on:
+  workflow_dispatch:
+    inputs:
+      note:
+        description: Free text added to the release notes
+        required: false
+        default: routine maintenance
+env:
+  ACTIONS_STEP_DEBUG: true
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    container: node:latest
+    services:
+      cache:
+        image: redis:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: tj-actions/changed-files@v35
+        id: changed
+      - run: echo "changed files ${{ steps.changed.outputs.all_changed_files }}"
+      - run: echo "note ${{ github.event.inputs.note }}"
+      - run: echo "NOTE=${{ github.event.inputs.note }}" >> "$GITHUB_ENV"
+  tooling:
+    runs-on: ubuntu-latest
+    container: python:latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@main
+      - uses: peter-evans/create-pull-request@v5
+        with:
+          title: Routine maintenance
+      - uses: stefanzweifel/git-auto-commit-action@v4
+      - run: curl -sSL https://example.com/install.sh | bash
+  release:
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
+      - uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          body: ${{ github.event.inputs.note }}
+  reports:
+    uses: ./.github/workflows/reusable-report.yml
+    secrets: inherit
