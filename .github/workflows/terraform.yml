@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: terraform-linters/setup-tflint@main
+      - uses: terraform-linters/setup-tflint@master
         continue-on-error: true
       - uses: aquasecurity/tfsec-action@master
         continue-on-error: true
