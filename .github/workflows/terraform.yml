@@ -1,0 +1,20 @@
+name: terraform
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    container: hashicorp/terraform:latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: terraform version
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: terraform-linters/setup-tflint@main
+        continue-on-error: true
+      - uses: aquasecurity/tfsec-action@master
+        continue-on-error: true
