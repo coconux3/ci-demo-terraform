@@ -9,12 +9,20 @@ jobs:
     container: hashicorp/terraform:latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - run: terraform version
+    permissions:
+      contents: read
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: terraform-linters/setup-tflint@master
         continue-on-error: true
       - uses: aquasecurity/tfsec-action@master
         continue-on-error: true
+    permissions:
+      contents: read
